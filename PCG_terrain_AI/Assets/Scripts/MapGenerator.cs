@@ -25,15 +25,26 @@ public class MapGenerator : MonoBehaviour
     public int seed;
     public Vector2 offset;
 
+    //UI elements
+    public Text seedTxt;
+    public Text heightTxt;
+    public Slider heightSlider;
+
     //Height/influence of height on noiseMap 
     public float meshHeightMultiplier;
     public AnimationCurve meshHeightCurve;
+    public AnimationCurve defaultHeightCurve;
+    public AnimationCurve desertHeightCurve;
+    public AnimationCurve forestHeightCurve;
+    public AnimationCurve mountainHeightCurve;
+    public AnimationCurve snowyHeightCurve;
+    public AnimationCurve waterHeightCurve;
 
     public bool autoUpdate;
 
     //Region "palette" for texturing based on heights
     public TerrainType[] regions;
-    //public TerrainType[] defaultRegion;
+    public TerrainType[] defaultRegion;
     public TerrainType[] desertRegion;
     public TerrainType[] forestRegion;
     public TerrainType[] mountainRegion;
@@ -41,7 +52,7 @@ public class MapGenerator : MonoBehaviour
     public TerrainType[] waterRegion;
 
     public void GenerateMap() {
-        //Making a noiseMap utilizing a Noise class.
+        //Making a noiseMap utilizing a Noise class
         float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistance, lacunarity, offset);
 
         //Making a color array containing all "chunks" of the map
@@ -53,8 +64,10 @@ public class MapGenerator : MonoBehaviour
                 //Setting height based on heights from noisemap
                 float currentHeight = noiseMap[x, y];
 
-                //Change parameters like heights & regions for diversity.
+                //Change parameters like heights & regions for diversity
+                //Region is selected by the toggles in SetRegion()
                 /*
+                 * Needs different heights / heightCurves
                  */
 
                 //Going through a regions "palette" for applying color based on height
@@ -65,8 +78,11 @@ public class MapGenerator : MonoBehaviour
                     }
                 }
             }
-        } 
-        //Sets the displayMode, DrawMode.Mesh is the actual map, while the other two are noiseMap and colorMap.
+        }
+        //Sets the seed text
+        seedTxt.text = "Seed: " + seed;
+
+        //Sets the displayMode, DrawMode.Mesh is the actual map, while the other two are noiseMap and colorMap
         MapDisplay display = FindObjectOfType<MapDisplay>();
         if(drawMode == DrawMode.NoiseMap) {
             display.DrawTexture(TextureGenerator.TextureFromHeightMap(noiseMap));
@@ -78,7 +94,7 @@ public class MapGenerator : MonoBehaviour
         
     }
 
-    //Makes sure that lacunarity and octaves are not below certain values.
+    //Makes sure that lacunarity and octaves are not below certain values
     void OnValidate() {
         if(lacunarity < 1) {
             lacunarity = 1;
@@ -86,6 +102,54 @@ public class MapGenerator : MonoBehaviour
         if(octaves < 0) {
             octaves = 0;
         }
+    }
+
+    //Sets the region & and the height cruve based on the toggled box in the menu
+    public void SetRegion(GameObject regionToggle) {
+        switch (regionToggle.name) {
+            case "ToggleDesert":
+                regions = desertRegion;
+                meshHeightCurve = desertHeightCurve;
+                break;
+            case "ToggleForest":
+                regions = forestRegion;
+                meshHeightCurve = forestHeightCurve;
+                break;
+            case "ToggleMountain":
+                regions = mountainRegion;
+                meshHeightCurve = mountainHeightCurve;
+                break;
+            case "ToggleSnow":
+                regions = snowyRegion;
+                meshHeightCurve = snowyHeightCurve;
+                break;
+            case "ToggleWater":
+                regions = waterRegion;
+                meshHeightCurve = waterHeightCurve;
+                break;
+            default:
+                //ToggleDefault
+                regions = defaultRegion;
+                meshHeightCurve = defaultHeightCurve;
+                break;
+        }
+        GenerateMap();
+    }
+
+    public void SetHeightCurveMultiplier() {
+        meshHeightMultiplier = heightSlider.value;
+        heightTxt.text = "Height Multiplier: " + meshHeightMultiplier.ToString("F2");
+        GenerateMap();
+    }
+
+    //Changes seed
+    public void NextSeed() {
+        seed++;
+        GenerateMap();
+    }
+    public void RandomSeed() {
+        seed = Random.Range(0, 100000);
+        GenerateMap();
     }
 }
 
