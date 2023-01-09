@@ -150,7 +150,7 @@ public class MapGenerator : MonoBehaviour
         }
         GenerateMap();
     }
-
+    //Sets values based on sliders
     public void SetHeightCurveMultiplier() {
         meshHeightMultiplier = heightSlider.value;
         heightTxt.text = "Height Multiplier: " + meshHeightMultiplier.ToString("F2");
@@ -177,6 +177,7 @@ public class MapGenerator : MonoBehaviour
         saveImage = true;
         GenerateMap();
     }
+    //changes object to a json_string
     public string SaveToString(Parameters parameters) {
         return JsonUtility.ToJson(parameters);
     }
@@ -209,6 +210,7 @@ public class Parameters
     public float meshHeightMultiplier;
     public TerrainType[] regions;
 
+    //Constructor of Parameters class
     public Parameters(int _width, int _height, int _levelOfDetail, float _noiseScale, int _octaves, float _persistance, float _lacunarity, int _seed, Vector2 _offset, float _meshHeightMultiplier, TerrainType[] _regions) {
         width = _width;
         height = _height;
