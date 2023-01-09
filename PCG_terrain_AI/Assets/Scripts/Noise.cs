@@ -8,6 +8,7 @@ public static class Noise
         //Generates a 2D float array for the noiseMap
         float[,] noiseMap = new float[mapWidth, mapHeight];
 
+        //Changes the generation position based on a random seed and offsets
         System.Random prng = new System.Random(seed);
         Vector2[] octavesOffsets = new Vector2[octaves];
         for(int i = 0; i < octaves; i++) {
@@ -36,6 +37,7 @@ public static class Noise
                 float frequency = 1;
                 float noiseHeight = 0;
 
+                //Loops through octaves allowing for more detail per octave
                 for(int i = 0; i< octaves; i++) {
                     float sampleX = (x-halfWidth) / scale * frequency + octavesOffsets[i].x;
                     float sampleY = (y-halfHeight) / scale * frequency + octavesOffsets[i].y;

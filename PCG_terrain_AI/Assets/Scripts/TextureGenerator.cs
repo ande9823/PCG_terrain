@@ -4,6 +4,7 @@ using UnityEngine;
 
 public static class TextureGenerator
 {
+    //Gets a colormap and turns it into a texture
     public static Texture2D TextureFromColorMap(Color[] colorMap, int width, int height) {
         Texture2D texture = new Texture2D(width, height);
         texture.filterMode = FilterMode.Point;
@@ -13,6 +14,7 @@ public static class TextureGenerator
         return texture;
     }
 
+    //Gets a heightmap and makes a grayscale colormap, which gets feed to the TextureFromColorMap() function
     public static Texture2D TextureFromHeightMap(float[,] heightMap) {
         int width = heightMap.GetLength(0);
         int height = heightMap.GetLength(1);

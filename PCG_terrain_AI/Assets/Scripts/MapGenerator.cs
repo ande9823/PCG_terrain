@@ -96,13 +96,13 @@ public class MapGenerator : MonoBehaviour
             Texture2D noiseMapTex = TextureGenerator.TextureFromHeightMap(noiseMap);
             byte[] noiseBytes = noiseMapTex.EncodeToPNG();
             
-            //Will save to project folder for testing purposes
-            File.WriteAllBytes(Application.dataPath + "/../SavedNoiseMap.png", noiseBytes);
+            //Will save to Assets/SavedTerrain folder (Needs to go out of Unity and in again to update folder)
+            File.WriteAllBytes(Application.dataPath + "/../Assets/SavedTerrain/SavedNoiseMap.png", noiseBytes);
 
             //Generates object of type Parameters, which is used to make a json-object and saved as a json file.
             Parameters parameters = new Parameters(mapChunkSize, mapChunkSize, levelOfDetail, noiseScale, octaves, persistance, lacunarity, seed, offset, meshHeightMultiplier, regions);
             string parametersInJson = SaveToString(parameters);
-            File.WriteAllText(Application.dataPath + "/../SavedParameters.json", parametersInJson);
+            File.WriteAllText(Application.dataPath + "/../Assets/SavedTerrain/SavedParameters.json", parametersInJson);
 
             saveImage = false;
         }
@@ -191,7 +191,7 @@ public struct TerrainType
     public Color color;
 }
 
-//[System.Serializable]
+//Class for Parameters, which constructs the object
 public class Parameters
 {
     public int width;
@@ -225,5 +225,4 @@ public class Parameters
         meshHeightMultiplier = _meshHeightMultiplier;
         regions = _regions;
     }
-    
 }
