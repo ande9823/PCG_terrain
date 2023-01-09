@@ -98,7 +98,12 @@ public class MapGenerator : MonoBehaviour
             
             //Will save to project folder for testing purposes
             File.WriteAllBytes(Application.dataPath + "/../SavedNoiseMap.png", noiseBytes);
-            
+
+            //Generates object of type Parameters, which is used to make a json-object and saved as a json file.
+            Parameters parameters = new Parameters(mapChunkSize, mapChunkSize, levelOfDetail, noiseScale, octaves, persistance, lacunarity, seed, offset, meshHeightMultiplier, regions);
+            string parametersInJson = SaveToString(parameters);
+            File.WriteAllText(Application.dataPath + "/../SavedParameters.json", parametersInJson);
+
             saveImage = false;
         }
 
@@ -172,6 +177,9 @@ public class MapGenerator : MonoBehaviour
         saveImage = true;
         GenerateMap();
     }
+    public string SaveToString(Parameters parameters) {
+        return JsonUtility.ToJson(parameters);
+    }
 }
 
 //Struct for terrainType, to define terrain-altitudes for a "palette"
@@ -181,4 +189,41 @@ public struct TerrainType
     public string name;
     public float height;
     public Color color;
+}
+
+//[System.Serializable]
+public class Parameters
+{
+    public int width;
+    public int height;
+    public int levelOfDetail;
+    public float noiseScale;
+
+    public int octaves;
+    public float persistance;
+    public float lacunarity;
+
+    public int seed;
+    public Vector2 offset;
+
+    public float meshHeightMultiplier;
+    public TerrainType[] regions;
+
+    public Parameters(int _width, int _height, int _levelOfDetail, float _noiseScale, int _octaves, float _persistance, float _lacunarity, int _seed, Vector2 _offset, float _meshHeightMultiplier, TerrainType[] _regions) {
+        width = _width;
+        height = _height;
+        levelOfDetail = _levelOfDetail;
+        noiseScale = _noiseScale;
+
+        octaves = _octaves;
+        persistance = _persistance;
+        lacunarity = _lacunarity;
+
+        seed = _seed;
+        offset = _offset;
+
+        meshHeightMultiplier = _meshHeightMultiplier;
+        regions = _regions;
+    }
+    
 }
