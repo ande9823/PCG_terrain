@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class MapGenerator : MonoBehaviour
     public Text seedTxt;
     public Text heightTxt;
     public Slider heightSlider;
+    public Text zoomTxt;
+    public Slider zoomSlider;
 
     //Height/influence of height on noiseMap 
     public float meshHeightMultiplier;
@@ -41,6 +44,7 @@ public class MapGenerator : MonoBehaviour
     public AnimationCurve waterHeightCurve;
 
     public bool autoUpdate;
+    public bool saveImage = false;
 
     //Region "palette" for texturing based on heights
     public TerrainType[] regions;
@@ -64,12 +68,6 @@ public class MapGenerator : MonoBehaviour
                 //Setting height based on heights from noisemap
                 float currentHeight = noiseMap[x, y];
 
-                //Change parameters like heights & regions for diversity
-                //Region is selected by the toggles in SetRegion()
-                /*
-                 * Needs different heights / heightCurves
-                 */
-
                 //Going through a regions "palette" for applying color based on height
                 for (int i = 0; i < regions.Length; i++) {
                     if(currentHeight <= regions[i].height) {
@@ -91,7 +89,19 @@ public class MapGenerator : MonoBehaviour
         } else if (drawMode == DrawMode.Mesh) {
             display.DrawMesh(MeshGenerator.GenerateTerrainMesh(noiseMap, meshHeightMultiplier, meshHeightCurve, levelOfDetail), TextureGenerator.TextureFromColorMap(colorMap, mapChunkSize, mapChunkSize));
         }
-        
+
+        //Will save entire noisemap as image
+        if (saveImage) {
+            //Gets the texture for the noisemap and changes it to a byte array in order to save as an image
+            Texture2D noiseMapTex = TextureGenerator.TextureFromHeightMap(noiseMap);
+            byte[] noiseBytes = noiseMapTex.EncodeToPNG();
+            
+            //Will save to project folder for testing purposes
+            File.WriteAllBytes(Application.dataPath + "/../SavedNoiseMap.png", noiseBytes);
+            
+            saveImage = false;
+        }
+
     }
 
     //Makes sure that lacunarity and octaves are not below certain values
@@ -141,6 +151,11 @@ public class MapGenerator : MonoBehaviour
         heightTxt.text = "Height Multiplier: " + meshHeightMultiplier.ToString("F2");
         GenerateMap();
     }
+    public void SetNoiseScale() {
+        noiseScale = zoomSlider.value;
+        zoomTxt.text = "Noise Scale: " + noiseScale.ToString("F1");
+        GenerateMap();
+    }
 
     //Changes seed
     public void NextSeed() {
@@ -149,6 +164,12 @@ public class MapGenerator : MonoBehaviour
     }
     public void RandomSeed() {
         seed = Random.Range(0, 100000);
+        GenerateMap();
+    }
+
+    //Changes bool to allow for saving as image
+    public void ChangeBool() {
+        saveImage = true;
         GenerateMap();
     }
 }
